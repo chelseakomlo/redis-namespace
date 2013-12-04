@@ -357,35 +357,28 @@ class Redis
       # Remove the namespace from results that are keys.
       if result
 
-        result = namespace_post(result, after)
+        namespaced = namespace_post(after)
 
-        # case after
-        # when :all
-        #   result = namespaced.call(result)
-        # when :first
-        #   result[0] = namespaced.call(result)
-        # when :second
-        #   result[1] = namespaced.call(result)
-        # end
+        case after
+        when :all
+          result = namespaced.call(result)
+        when :first
+          result[0] = namespaced.call(result)
+        when :second
+          result[1] = namespaced.call(result)
+        end
 
       end
 
       result
     end
 
-    def namespace_post(result, command)
-      outcomes = {
-        :all => lambda { |result| result = rem_namespace(result) }, 
-        :first => lambda { |result| result[0] = rem_namespace(result[0]) }, 
-        :second => lambda { |result| result[1] = rem_namespace(result[1]) }
-      }
-
-      if outcomes[command]
-        outcomes[command].call(result)
-      end
-
-      return result
-      
+    def namespace_post(command)
+      {
+        :all => lambda { |result| rem_namespace(result) }, 
+        :first => lambda { |result| rem_namespace(result[0]) }, 
+        :second => lambda { |result| rem_namespace(result[1]) }
+      }[command]
     end
 
   private
