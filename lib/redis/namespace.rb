@@ -356,12 +356,11 @@ class Redis
 
       # Remove the namespace from results that are keys.
 
-      result = namespace_post(after).call(result) if result
+      result = add_post_namespace(after).call(result) if result
 
-      result
     end
 
-    def namespace_post(command)
+    def add_post_namespace(command)
       command_something = {
         :all => lambda { |result| rem_namespace(result) }, 
         :first => lambda { |result| result[0] = rem_namespace(result[0]); result }, 
