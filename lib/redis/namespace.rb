@@ -355,16 +355,37 @@ class Redis
       return result if result.is_a?(Redis::Future)
 
       # Remove the namespace from results that are keys.
-      case after
-      when :all
-        result = rem_namespace(result)
-      when :first
-        result[0] = rem_namespace(result[0]) if result
-      when :second
-        result[1] = rem_namespace(result[1]) if result
+      if result
+
+        result = namespace_post(result, after)
+
+        # case after
+        # when :all
+        #   result = namespaced.call(result)
+        # when :first
+        #   result[0] = namespaced.call(result)
+        # when :second
+        #   result[1] = namespaced.call(result)
+        # end
+
       end
 
       result
+    end
+
+    def namespace_post(result, command)
+      outcomes = {
+        :all => lambda { |result| result = rem_namespace(result) }, 
+        :first => lambda { |result| result[0] = rem_namespace(result[0]) }, 
+        :second => lambda { |result| result[1] = rem_namespace(result[1]) }
+      }
+
+      if outcomes[command]
+        outcomes[command].call(result)
+      end
+
+      return result
+      
     end
 
   private
