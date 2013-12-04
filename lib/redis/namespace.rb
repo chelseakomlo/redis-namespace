@@ -361,12 +361,12 @@ class Redis
     end
 
     def add_post_namespace(command)
-      command_something = {
+      namespaced_result = {
         :all => lambda { |result| rem_namespace(result) }, 
         :first => lambda { |result| result[0] = rem_namespace(result[0]); result }, 
         :second => lambda { |result| result[1] = rem_namespace(result[1]); result } 
       }[command]
-      command_something == nil ? lambda {|result| result} : command_something
+      namespaced_result == nil ? lambda {|result| result} : namespaced_result
     end
 
   private
